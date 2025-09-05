@@ -1,21 +1,19 @@
 package main
 
 import (
-	"context"
-	"fmt"
+	"github.com/pact-foundation/pact-go/v2/message"
 	"github.com/pact-foundation/pact-go/v2/provider"
-	"log"
 	"os"
+	"testing"
 )
 
-func main() {
+func TestKafkaProvider(t *testing.T) {
 	verifier := provider.NewVerifier()
 
-	// Configuración del verificador
 	verifyRequest := provider.VerifyRequest{
 		Provider:                   "GenreEventProducer",
 		BrokerURL:                  "https://webflowluca.pactflow.io",
-		BrokerToken:                os.Getenv("PACTFLOW_TOKEN"), // Usa variable de entorno para seguridad
+		BrokerToken:                os.Getenv("PACTFLOW_TOKEN"),
 		PublishVerificationResults: true,
 		ProviderVersion:            "1.0.0",
 		Transports: []provider.Transport{
@@ -23,9 +21,8 @@ func main() {
 				Protocol: "message",
 			},
 		},
-		MessageHandlers: map[string]func() (interface{}, error){
+		MessageHandlers: message.Handlers{
 			"genre message": func() (interface{}, error) {
-				// Simula el mensaje que se publicaría en Kafka
 				message := map[string]interface{}{
 					"id":    123,
 					"nobre": "Rock",
@@ -35,10 +32,7 @@ func main() {
 		},
 	}
 
-	// Ejecuta la verificación
-	if err := verifier.VerifyProvider(context.Background(), verifyRequest); err != nil {
-		log.Fatalf("Error verificando el provider: %v", err)
+	if err := verifier.VerifyProvider(t, verifyRequest); err != nil {
+		t.Fatalf("Error verificando el provider: %v", err)
 	}
-
-	fmt.Println("✅ Verificación completada correctamente")
 }
