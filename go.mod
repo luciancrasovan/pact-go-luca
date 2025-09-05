@@ -1,4 +1,4 @@
-module github.com/pact-foundation/pact-go/v2
+module github.com/luciancrasovan/pact-go-luca
 
 go 1.23.0
 
