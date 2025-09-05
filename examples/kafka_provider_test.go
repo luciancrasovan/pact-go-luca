@@ -14,7 +14,7 @@ func TestKafkaProvider(t *testing.T) {
 
 	// Map test descriptions to message producer (handlers)
 	functionMappings := message.Handlers{
-		"a gebre event": func([]models.ProviderState) (message.Body, message.Metadata, error) {
+		"a genre event": func([]models.ProviderState) (message.Body, message.Metadata, error) {
 			if genre != nil {
 				return genre, message.Metadata{
 					"Content-Type": "application/json",
@@ -29,11 +29,9 @@ func TestKafkaProvider(t *testing.T) {
 
 	stateMappings := models.StateHandlers{
 		"Genre with id 1000 exists": func(setup bool, s models.ProviderState) (models.ProviderStateResponse, error) {
-			if setup {
-				genre = &Genre{
-					ID:   100,
-					Name: "SciFi",
-				}
+			genre = &Genre{
+				ID:   100,
+				Name: "SciFi",
 			}
 
 			return models.ProviderStateResponse{"id": genre.ID}, nil
@@ -41,7 +39,7 @@ func TestKafkaProvider(t *testing.T) {
 	}
 
 	verifyRequest := provider.VerifyRequest{
-		Provider:                   "GenreEventProducer",
+		Provider:                   "GoGenreEventProducer",
 		BrokerURL:                  "https://webflowluca.pactflow.io",
 		BrokerToken:                os.Getenv("PACTFLOW_TOKEN"),
 		PublishVerificationResults: true,
