@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/pact-foundation/pact-go/v2/message"
+	"github.com/pact-foundation/pact-go/v2/models"
 	"github.com/pact-foundation/pact-go/v2/provider"
 	"os"
 	"testing"
@@ -22,8 +23,8 @@ func TestKafkaProvider(t *testing.T) {
 			},
 		},
 		MessageHandlers: message.Handlers{
-			"genre message": func() (any, error) {
-				message := map[string]any{
+			"genre message": func([]models.ProviderState) {
+				message := map[string]interface{}{
 					"id":    123,
 					"nobre": "Rock",
 				}
