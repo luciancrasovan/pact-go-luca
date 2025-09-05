@@ -55,7 +55,7 @@ func TestV3MessageProvider(t *testing.T) {
 	verifier.VerifyProvider(t, provider.VerifyRequest{
 		StateHandlers:   stateMappings,
 		Provider:        "V3MessageProvider",
-		ProviderVersion: os.Getenv("APP_SHA"),
+		ProviderVersion: "1.0.0",
 		BrokerURL:       "https://webflowluca.pactflow.io",
 		BrokerToken:     os.Getenv("PACTFLOW_TOKEN"),
 		MessageHandlers: functionMappings,
