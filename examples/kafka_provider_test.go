@@ -1,22 +1,30 @@
+//go:build provider
+// +build provider
+
+// Package main contains a runnable Provider Pact test example.
 package main
 
 import (
+	"os"
+	"testing"
+
+	"github.com/pact-foundation/pact-go/v2/log"
 	"github.com/pact-foundation/pact-go/v2/message"
 	"github.com/pact-foundation/pact-go/v2/models"
 	"github.com/pact-foundation/pact-go/v2/provider"
-	"os"
-	"testing"
 )
 
-func TestKafkaProvider(t *testing.T) {
+func TestV3MessageProvider(t *testing.T) {
+	log.SetLogLevel("TRACE")
+	var user *User
+
 	verifier := provider.NewVerifier()
-	var genre *Genre
 
 	// Map test descriptions to message producer (handlers)
 	functionMappings := message.Handlers{
-		"a genre event": func([]models.ProviderState) (message.Body, message.Metadata, error) {
-			if genre != nil {
-				return genre, message.Metadata{
+		"a user event": func([]models.ProviderState) (message.Body, message.Metadata, error) {
+			if user != nil {
+				return user, message.Metadata{
 					"Content-Type": "application/json",
 				}, nil
 			} else {
@@ -27,38 +35,37 @@ func TestKafkaProvider(t *testing.T) {
 		},
 	}
 
+	// Setup any required states for the handlers
 	stateMappings := models.StateHandlers{
-		"Genre with id 1000 exists": func(setup bool, s models.ProviderState) (models.ProviderStateResponse, error) {
-			genre = &Genre{
-				ID:   100,
-				Name: "SciFi",
+		"User with id 127 exists": func(setup bool, s models.ProviderState) (models.ProviderStateResponse, error) {
+			if setup {
+				user = &User{
+					ID:       127,
+					Name:     "Billy",
+					Date:     "2020-01-01",
+					LastName: "Sampson",
+				}
 			}
 
-			return models.ProviderStateResponse{"id": genre.ID}, nil
+			return models.ProviderStateResponse{"id": user.ID}, nil
 		},
 	}
 
-	verifyRequest := provider.VerifyRequest{
-		Provider:                   "GoGenreEventProducer",
-		BrokerURL:                  "https://webflowluca.pactflow.io",
-		BrokerToken:                os.Getenv("PACTFLOW_TOKEN"),
-		PublishVerificationResults: true,
-		ProviderVersion:            "1.0.0",
-		Transports: []provider.Transport{
-			{
-				Protocol: "message",
-			},
-		},
-		MessageHandlers: functionMappings,
+	// Verify the Provider with pact contract from PactFile broker
+	verifier.VerifyProvider(t, provider.VerifyRequest{
 		StateHandlers:   stateMappings,
-	}
+		Provider:        "V3MessageProvider",
+		ProviderVersion: os.Getenv("APP_SHA"),
+		BrokerURL:       "https://webflowluca.pactflow.io",
+		BrokerToken:     os.Getenv("PACTFLOW_TOKEN"),
+		MessageHandlers: functionMappings,
+	})
 
-	if err := verifier.VerifyProvider(t, verifyRequest); err != nil {
-		t.Fatalf("Error verificando el provider: %v", err)
-	}
 }
 
-type Genre struct {
-	ID   int    `json:"id" pact:"example=1000"`
-	Name string `json:"name" pact:"example=SciFi"`
+type User struct {
+	ID       int    `json:"id" pact:"example=27"`
+	Name     string `json:"name" pact:"example=billy"`
+	LastName string `json:"lastName" pact:"example=Sampson"`
+	Date     string `json:"datetime" pact:"example=2020-01-01'T'08:00:45,format=yyyy-MM-dd'T'HH:mm:ss,generator=datetime"`
 }
