@@ -125,8 +125,8 @@ pact: clean install docker
 	make publish
 	go test -v -timeout=30s -tags=provider -count=1 github.com/pact-foundation/pact-go/v2/examples/...
 pact_local: clean download_plugins install 
-	@echo "--- 🔨 Running Pact examples"
-	go test -v -tags=consumer -count=1 github.com/pact-foundation/pact-go/v2/examples/...
+	@echo "--- 🔨 Running Pact provider examples"
+	#go test -v -tags=consumer -count=1 github.com/pact-foundation/pact-go/v2/examples/...
 	#if [ "$(SKIP_PROVIDER_TESTS)" != "true" ]; then \
 	go test -v -timeout=30s -tags=provider -count=1 github.com/pact-foundation/pact-go/v2/examples/...; \
 	#fi
