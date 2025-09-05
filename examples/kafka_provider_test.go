@@ -22,8 +22,8 @@ func TestKafkaProvider(t *testing.T) {
 			},
 		},
 		MessageHandlers: message.Handlers{
-			"genre message": func() (interface{}, error) {
-				message := map[string]interface{}{
+			"genre message": func() (any, error) {
+				message := map[string]any{
 					"id":    123,
 					"nobre": "Rock",
 				}
