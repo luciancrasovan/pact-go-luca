@@ -95,12 +95,6 @@ jobs:
 
       - name: Test dockerfile
         run: |
-          if [[ "${{ matrix.variant }}" == "alpine" ]]; then
-            export SKIP_PROVIDER_TESTS=true
-            if [[ "${{ github.event.inputs.SKIP_ALPINE_PROVIDER_TESTS }}" == "false" ]]; then
-              export SKIP_PROVIDER_TESTS=false
-            fi
-          fi
           make docker_test_all
         env:
           GO_VERSION: ${{ matrix.go-version }}
